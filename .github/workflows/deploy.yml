@@ -10,25 +10,12 @@ jobs:
       matrix:
         include:
           - os: ubuntu-22.04
-            TARGET: x86_64-unknown-linux-gnu
-            SUFFIX: linux-desktop
-
-          - os: ubuntu-22.04
             TARGET: armv7-unknown-linux-gnueabihf
             SUFFIX: armv7
 
           - os: ubuntu-22.04
             TARGET: aarch64-unknown-linux-gnu
             SUFFIX: aarch64
-
-          - os: macos-13
-            TARGET: x86_64-apple-darwin
-            SUFFIX: macos
-
-          - os: windows-2022
-            TARGET: x86_64-pc-windows-msvc
-            SUFFIX: x86_64-pc-windows
-            EXTENSION: .exe
 
     steps:
     - name: Checkout
