@@ -59,7 +59,7 @@ impl Manager {
 
 #[instrument(level = "debug")]
 pub fn init() {
-    debug!("Starting video stream service.");
+    debug!("zora !!! Starting video stream service.");
 
     if let Err(error) = gst::init() {
         error!("Error! {error}");
