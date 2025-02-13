@@ -206,13 +206,13 @@ impl RTSPServer {
             "JPEG" => {
                 format!(
                     concat!(
-                        "shmsrc socket-path={socket_path} do-timestamp=true is-live=false",
+                        "shmsrc socket-path={socket_path} do-timestamp=true is-live=true",
                         " ! queue leaky=downstream flush-on-eos=true silent=true max-size-buffers=10",
                         " ! capsfilter caps={rtp_caps:?}",
                         " ! rtpjpegdepay",
                         " ! jpegdec",
                         " ! videoconvert",
-                        " ! mpph264enc",
+                        " ! mpph264enc gop=80 bps=1000000 rc-mode=cbr qp-max=50 qp-min=28 qp-init=32",
                         " ! rtph264pay name=pay0 pt=96",
                     ),
                     socket_path = socket_path,
