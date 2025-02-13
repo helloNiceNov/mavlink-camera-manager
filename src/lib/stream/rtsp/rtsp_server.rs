@@ -210,7 +210,7 @@ impl RTSPServer {
                         " ! queue leaky=downstream flush-on-eos=true silent=true max-size-buffers=10",
                         " ! capsfilter caps={rtp_caps:?}",
                         " ! rtpjpegdepay",
-                        " ! jpegdec",
+                        " ! mppjpegdec",
                         " ! videoconvert",
                         " ! mpph264enc gop=80 bps=1000000 rc-mode=cbr qp-max=50 qp-min=28 qp-init=32",
                         " ! rtph264pay name=pay0 pt=96",
