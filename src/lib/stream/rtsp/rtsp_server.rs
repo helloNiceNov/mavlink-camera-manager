@@ -212,6 +212,7 @@ impl RTSPServer {
                         " ! rtpjpegdepay",
                         " ! mppjpegdec",
                         " ! videoconvert",
+                        " ! video/x-raw,format=NV12",
                         " ! mpph264enc gop=80 bps=1000000 rc-mode=cbr qp-max=50 qp-min=28 qp-init=32",
                         " ! rtph264pay name=pay0 pt=96",
                     ),
