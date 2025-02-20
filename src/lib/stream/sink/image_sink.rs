@@ -609,7 +609,16 @@ impl ImageSink {
                 return;
             }
 
-            let _ = tx.send(Ok(buffer.into_inner()));
+            // 获取文件保存路径
+            let file_path = "/home/pi/img/thumbnail.jpg";
+
+            // 克隆 buffer 内容并保存到文件
+            let buffer_data = buffer.clone().into_inner();
+            if let Err(error) = std::fs::write(file_path, &buffer_data) {
+                let _ = tx.send(Err(anyhow!("Failed saving image to file. Reason: {error}")));
+                return;
+            }
+            let _ = tx.send(Ok(buffer_data));
         });
 
         let thumbnail = tokio::time::timeout(tokio::time::Duration::from_secs(2), rx).await???;
