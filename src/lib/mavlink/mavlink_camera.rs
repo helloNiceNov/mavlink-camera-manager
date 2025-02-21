@@ -430,6 +430,31 @@ impl MavlinkCameraInner {
 
                 warn!("MAVLink message \"MAV_CMD_REQUEST_MESSAGE\" is not supported yet, please report this issue so we can prioritize it. Meanwhile, you can use the original definitions for the MAVLink Camera Protocol. Read more in: https://mavlink.io/en/services/camera.html#migration-notes-for-gcs--mavlink-sdks");
             }
+            mavlink::common::MavCmd::MAV_CMD_IMAGE_START_CAPTURE => {
+                let result = mavlink::common::MavResult::MAV_RESULT_ACCEPTED;
+                send_ack(&sender, our_header, their_header, data.command, result);
+
+                let sys_info = super::sys_info::sys_info();
+                let message = MavMessage::CAMERA_IMAGE_CAPTURED(
+                    mavlink::common::CAMERA_IMAGE_CAPTURED_DATA {
+                        time_utc: 0,              // 默认 UTC 时间（0）
+                        time_boot_ms: 0,          // 默认启动时间（毫秒）
+                        lat: 0,                   // 默认纬度（0）
+                        lon: 0,                   // 默认经度（0）
+                        alt: 0,                   // 默认海拔（0）
+                        relative_alt: 0,          // 默认相对海拔（0）
+                        q: [0.0, 0.0, 0.0, 0.0],  // 默认四元数（0.0）
+                        image_index: 0,           // 默认图像索引（0）
+                        camera_id: 1,             // 默认相机 ID（假设为1）
+                        capture_result: 0,        // 默认捕获结果（0 表示成功）
+                        file_url: [0; 205],       // 默认文件 URL（全部填充为 0）
+                    },
+                );
+
+                if let Err(error) = sender.send(Message::ToBeSent((our_header, message))) {
+                    warn!("Failed to send CAMERA_IMAGE_CAPTURED message: {error:?}");
+                }
+            }
             message => {
                 let result = mavlink::common::MavResult::MAV_RESULT_UNSUPPORTED;
                 send_ack(&sender, our_header, their_header, data.command, result);
