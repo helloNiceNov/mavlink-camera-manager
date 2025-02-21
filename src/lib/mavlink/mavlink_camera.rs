@@ -437,17 +437,17 @@ impl MavlinkCameraInner {
                 let sys_info = super::sys_info::sys_info();
                 let message = MavMessage::CAMERA_IMAGE_CAPTURED(
                     mavlink::common::CAMERA_IMAGE_CAPTURED_DATA {
-                        time_utc: 0,              // 默认 UTC 时间（0）
-                        time_boot_ms: 0,          // 默认启动时间（毫秒）
-                        lat: 0,                   // 默认纬度（0）
-                        lon: 0,                   // 默认经度（0）
-                        alt: 0,                   // 默认海拔（0）
-                        relative_alt: 0,          // 默认相对海拔（0）
-                        q: [0.0, 0.0, 0.0, 0.0],  // 默认四元数（0.0）
-                        image_index: 0,           // 默认图像索引（0）
-                        camera_id: 1,             // 默认相机 ID（假设为1）
-                        capture_result: 0,        // 默认捕获结果（0 表示成功）
-                        file_url: [0; 205],       // 默认文件 URL（全部填充为 0）
+                        time_utc: 0,
+                        time_boot_ms: 0,
+                        lat: 0,
+                        lon: 0,
+                        alt: 0,
+                        relative_alt: 0,
+                        q: [0.0, 0.0, 0.0, 0.0],
+                        image_index: 0,
+                        camera_id: 1,
+                        capture_result: 0,
+                        file_url: [0; 205],
                     },
                 );
 
