@@ -10,7 +10,7 @@ use image::FlatSamples;
 use tracing::*;
 
 use crate::{stream::pipeline::runner::PipelineRunner, video::types::VideoEncodeType};
-
+use chrono::Utc;
 use super::SinkInterface;
 
 type ClonableResult<T> = Result<T, Arc<Error>>;
@@ -610,8 +610,8 @@ impl ImageSink {
             }
 
             // 获取文件保存路径
-            let file_path = "/home/pi/img/thumbnail.jpg";
-
+            let timestamp = Utc::now().to_rfc3339();
+            let unique_filename = format!("/home/pi/img/thumbnail_{}.jpg", timestamp);
             // 克隆 buffer 内容并保存到文件
             let buffer_data = buffer.clone().into_inner();
             if let Err(error) = std::fs::write(file_path, &buffer_data) {
