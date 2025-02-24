@@ -433,7 +433,7 @@ impl MavlinkCameraInner {
             mavlink::common::MavCmd::MAV_CMD_IMAGE_START_CAPTURE => {
                 let result = mavlink::common::MavResult::MAV_RESULT_ACCEPTED;
                 send_ack(&sender, our_header, their_header, data.command, result);
-
+                warn!("zora Received starting capture 01");
                 let source = "/dev/video1".to_string();
                 let quality = 70u8;
                 let target_height = None;
@@ -461,16 +461,18 @@ impl MavlinkCameraInner {
                                 file_url: [0u8; 205],
                             },
                         );
-
+                        warn!("zora enter starting capture 02");
                         if let Err(error) = sender.send(Message::ToBeSent((our_header, message))) {
                             warn!("Failed to send CAMERA_IMAGE_CAPTURED message: {error:?}");
                         }
                     }
                     None => {
                         warn!("Thumbnail not found for source {source}");
+                        warn!("zora none starting capture 03");
                     }
                     Some(Err(error)) => {
                         warn!("Error generating thumbnail: {error:?}");
+                        warn!("zora error starting capture 04");
                     }
                 }
             }
