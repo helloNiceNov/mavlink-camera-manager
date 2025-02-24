@@ -614,7 +614,7 @@ impl ImageSink {
             let unique_filename = format!("/home/pi/img/thumbnail_{}.jpg", timestamp);
             // 克隆 buffer 内容并保存到文件
             let buffer_data = buffer.clone().into_inner();
-            if let Err(error) = std::fs::write(file_path, &buffer_data) {
+            if let Err(error) = std::fs::write(&unique_filename, &buffer_data) {
                 let _ = tx.send(Err(anyhow!("Failed saving image to file. Reason: {error}")));
                 return;
             }
