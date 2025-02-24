@@ -8,9 +8,9 @@ use url::Url;
 
 use crate::{
     cli, mavlink::mavlink_camera_component::MavlinkCameraComponent,
-    network::utils::get_visible_qgc_address, video::types::VideoSourceType,
+    network::utils::get_visible_qgc_address, stream::manager as stream_manager,
+    video::types::VideoSourceType,
     video_stream::types::VideoAndStreamInformation,
-    stream::manager as stream_manager,
 };
 
 use super::{manager::Message, utils::*};
@@ -438,7 +438,12 @@ impl MavlinkCameraInner {
                 let source = "/dev/video1".to_string();
                 let quality = 70u8;
                 let target_height = None;
-                match stream_manager::get_jpeg_thumbnail_from_source(source.clone(), quality, target_height).await
+                match stream_manager::get_jpeg_thumbnail_from_source(
+                    source.clone(),
+                    quality,
+                    target_height
+                )
+                .await
                 {
                     Some(Ok(_image)) => {
                         // Process and send the generated thumbnail back as a MAVLink message
