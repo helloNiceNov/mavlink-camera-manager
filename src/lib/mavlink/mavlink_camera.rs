@@ -9,7 +9,7 @@ use url::Url;
 use crate::{
     cli, mavlink::mavlink_camera_component::MavlinkCameraComponent,
     network::utils::get_visible_qgc_address, stream::manager as stream_manager,
-    video::types::VideoSourceType,video_stream::types::VideoAndStreamInformation,
+    video::types::VideoSourceType, video_stream::types::VideoAndStreamInformation,
 };
 
 use super::{manager::Message, utils::*};
