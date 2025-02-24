@@ -9,7 +9,6 @@ use gst_video::VideoFrameExt;
 use image::FlatSamples;
 use tracing::*;
 use crate::{stream::pipeline::runner::PipelineRunner, video::types::VideoEncodeType};
-use chrono::Utc;
 
 use super::SinkInterface;
 
