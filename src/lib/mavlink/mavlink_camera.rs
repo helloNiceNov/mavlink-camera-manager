@@ -435,7 +435,7 @@ impl MavlinkCameraInner {
                 let result = mavlink::common::MavResult::MAV_RESULT_ACCEPTED;
                 send_ack(&sender, our_header, their_header, data.command, result);
 
-                let source = "/dev/video1";
+                let source = "/dev/video1".to_string();
                 let quality = 70u8;
                 let target_height = None;
                 match stream_manager::get_jpeg_thumbnail_from_source(source, quality, target_height).await
