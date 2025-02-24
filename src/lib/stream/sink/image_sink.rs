@@ -8,7 +8,7 @@ use gst::prelude::*;
 use gst_video::VideoFrameExt;
 use image::FlatSamples;
 use tracing::*;
-use chrono::Utc
+use chrono::Utc;
 
 use crate::{stream::pipeline::runner::PipelineRunner, video::types::VideoEncodeType};
 
