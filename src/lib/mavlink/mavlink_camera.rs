@@ -457,7 +457,7 @@ impl MavlinkCameraInner {
                                 q: [0.0, 0.0, 0.0, 0.0],
                                 image_index: 0,
                                 camera_id: 1,
-                                capture_result: 0,
+                                capture_result: 1,
                                 file_url: [0u8; 205],
                             },
                         );
