@@ -87,6 +87,7 @@ impl VideoSink {
         let mut elements = vec![&_proxysrc];
         elements.push(muxer.upcast_ref());
         elements.push(filesink.upcast_ref());
+        let elements = &elements;
         if let Err(add_err) = pipeline.add_many(elements) {
             return Err(anyhow!(
                 "Failed adding VideoSink's elements to Sink Pipeline: {add_err:?}"
