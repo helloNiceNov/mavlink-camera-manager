@@ -1,6 +1,7 @@
 pub mod image_sink;
 pub mod rtsp_sink;
 pub mod udp_sink;
+pub mod video_sink;
 pub mod webrtc_sink;
 
 use anyhow::{anyhow, Result};
@@ -12,6 +13,7 @@ use crate::video_stream::types::VideoAndStreamInformation;
 use image_sink::ImageSink;
 use rtsp_sink::RtspSink;
 use udp_sink::UdpSink;
+use video_sink::VideoSink;
 use webrtc_sink::WebRTCSink;
 
 #[enum_dispatch]
@@ -51,6 +53,7 @@ pub enum Sink {
     Rtsp(RtspSink),
     WebRTC(WebRTCSink),
     Image(ImageSink),
+    Video(VideoSink),
 }
 
 #[instrument(level = "debug")]
@@ -98,4 +101,9 @@ pub fn create_image_sink(
         }
     };
     Ok(Sink::Image(ImageSink::try_new(id, encoding)?))
+}
+
+#[instrument(level = "debug")]
+pub fn create_video_sink(id: uuid::Uuid) -> Result<Sink> {
+    Ok(Sink::Video(VideoSink::try_new(id)?))
 }

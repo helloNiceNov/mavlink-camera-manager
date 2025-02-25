@@ -13,7 +13,7 @@ use anyhow::{anyhow, Context, Result};
 use gst::utils::get_encode_from_stream_uri;
 use manager::Manager;
 use pipeline::Pipeline;
-use sink::{create_image_sink, create_rtsp_sink, create_udp_sink};
+use sink::{create_image_sink, create_rtsp_sink, create_udp_sink, create_video_sink};
 use tokio::sync::RwLock;
 use tracing::*;
 use types::*;
@@ -338,6 +338,14 @@ impl StreamState {
             {
                 return Err(anyhow!(
                     "Failed to add Sink of type Image to the Pipeline. Reason: {reason}"
+                ));
+            }
+
+            if let Err(reason) = create_video_sink(Manager::generate_uuid())
+                .and_then(|sink| stream.pipeline.add_sink(sink))
+            {
+                return Err(anyhow!(
+                    "Failed to add Sink of type Video to the Pipeline. Reason: {reason}"
                 ));
             }
 
