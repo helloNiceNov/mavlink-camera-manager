@@ -194,7 +194,7 @@ impl PipelineState {
         // Request a new src pad for the used Tee
         // Note: Here we choose if the sink will receive a Video or RTP packages
         let tee = match sink {
-            Sink::Image(_) => &self.video_tee,
+            Sink::Image(_) | Sink::Video(_) => &self.video_tee,
             Sink::Udp(_) | Sink::Rtsp(_) | Sink::WebRTC(_) => &self.rtp_tee,
         };
 
@@ -257,7 +257,7 @@ impl PipelineState {
         // Skipping ImageSink syncronization because it goes to some wrong state,
         // and all other sinks need it to work without freezing when dynamically
         // added.
-        if !matches!(&sink, Sink::Image(..)) {
+        if !matches!(&sink, Sink::Image(..)) && !matches!(&sink, Sink::Video(..)) {
             if let Err(error) = pipeline.sync_children_states() {
                 error!("Failed to syncronize children states. Reason: {error:?}");
             }

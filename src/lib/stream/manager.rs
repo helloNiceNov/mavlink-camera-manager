@@ -415,7 +415,7 @@ pub async fn get_video_from_source(
     });
 
     match rx.await {
-        Ok(res) => res,
+        Ok(_) => Ok(()),
         Err(error) => Some(Err(Arc::new(anyhow!(error.to_string())))),
     }
 }

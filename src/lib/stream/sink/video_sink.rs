@@ -74,9 +74,9 @@ impl VideoSink {
         let queue_src_pad = queue.static_pad("src").expect("No src pad found on Queue");
 
         // To get data out of the callback, we'll be using this arc mutex
-        let (sender, _) = tokio::sync::broadcast::channel(1);
-        let flat_samples_sender = sender.clone();
-        let mut pending = false;
+        // let (sender, _) = tokio::sync::broadcast::channel(1);
+        // let flat_samples_sender = sender.clone();
+        // let mut pending = false;
 
         // 创建 Pipeline
         let pipeline = gst::Pipeline::builder()
