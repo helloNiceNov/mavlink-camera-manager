@@ -386,7 +386,7 @@ pub async fn get_video_from_source(
                             let sink = futures::stream::iter(sinks)
                                 .filter_map(|sink| {
                                     let future = async move {
-                                        matches!(sink, Sink::Image(_)).then_some(sink)
+                                        matches!(sink, Video::Image(_)).then_some(sink)
                                     };
 
                                     Box::pin(future)
@@ -394,16 +394,11 @@ pub async fn get_video_from_source(
                                 .next()
                                 .await?;
 
-                            let Sink::Image(image_sink) = sink else {
+                            let Sink::Video(video_sink) = sink else {
                                 return None;
                             };
 
-                            Some(
-                                image_sink
-                                    .make_jpeg_thumbnail_from_last_frame(quality, target_height)
-                                    .await
-                                    .map_err(Arc::new),
-                            )
+                            Some(video_sink.start_recording().await.map_err(Arc::new))
                         };
                         Box::pin(future)
                     })
