@@ -382,7 +382,7 @@ pub async fn get_video_from_source(source: String) -> Option<ClonableResult<()>>
                             let sink = futures::stream::iter(sinks)
                                 .filter_map(|sink| {
                                     let future = async move {
-                                        matches!(sink, Video::Video(_)).then_some(sink)
+                                        matches!(sink, Sink::Video(_)).then_some(sink)
                                     };
 
                                     Box::pin(future)
