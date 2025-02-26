@@ -340,11 +340,7 @@ pub async fn get_jpeg_thumbnail_from_source(
 
 #[instrument(level = "debug")]
 #[cached(time = 1)]
-pub async fn get_video_from_source(
-    source: String,
-    quality: u8,
-    target_height: Option<u32>,
-) -> Option<ClonableResult<()>> {
+pub async fn get_video_from_source(source: String) -> Option<ClonableResult<()>> {
     let (tx, rx) = tokio::sync::oneshot::channel();
     std::thread::spawn(move || {
         tokio::runtime::Builder::new_current_thread()
@@ -386,7 +382,7 @@ pub async fn get_video_from_source(
                             let sink = futures::stream::iter(sinks)
                                 .filter_map(|sink| {
                                     let future = async move {
-                                        matches!(sink, Video::Image(_)).then_some(sink)
+                                        matches!(sink, Video::Video(_)).then_some(sink)
                                     };
 
                                     Box::pin(future)
@@ -398,7 +394,7 @@ pub async fn get_video_from_source(
                                 return None;
                             };
 
-                            Some(video_sink.start_recording().await.map_err(Arc::new))
+                            Some(video_sink.start_recording().map_err(Arc::new))
                         };
                         Box::pin(future)
                     })

@@ -467,7 +467,6 @@ impl MavlinkCameraInner {
                         }
                     }
                     None => {
-                        warn!("Thumbnail not found for source {source}");
                         warn!("zora none starting capture 03");
                     }
                     Some(Err(error)) => {
@@ -479,7 +478,8 @@ impl MavlinkCameraInner {
             mavlink::common::MavCmd::MAV_CMD_VIDEO_START_CAPTURE => {
                 let result = mavlink::common::MavResult::MAV_RESULT_ACCEPTED;
                 send_ack(&sender, our_header, their_header, data.command, result);
-                match stream_manager::get_video_from_source().await {
+                let source = "/dev/video1".to_string();
+                match stream_manager::get_video_from_source(source.clone()).await {
                     Some(Ok(_image)) => {
                         // Process and send the generated thumbnail back as a MAVLink message
                         let message = MavMessage::CAMERA_IMAGE_CAPTURED(
