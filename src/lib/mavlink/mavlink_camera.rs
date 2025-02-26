@@ -430,7 +430,7 @@ impl MavlinkCameraInner {
 
                 warn!("MAVLink message \"MAV_CMD_REQUEST_MESSAGE\" is not supported yet, please report this issue so we can prioritize it. Meanwhile, you can use the original definitions for the MAVLink Camera Protocol. Read more in: https://mavlink.io/en/services/camera.html#migration-notes-for-gcs--mavlink-sdks");
             }
-            mavlink::common::MavCmd::MAV_CMD_IMAGE_START_CAPTURE => {
+            mavlink::common::MavCmd::MAV_CMD_VIDEO_START_CAPTURE => {
                 let result = mavlink::common::MavResult::MAV_RESULT_ACCEPTED;
                 send_ack(&sender, our_header, their_header, data.command, result);
                 warn!("zora Received starting capture 01");
@@ -475,7 +475,7 @@ impl MavlinkCameraInner {
                     }
                 }
             }
-            mavlink::common::MavCmd::MAV_CMD_VIDEO_START_CAPTURE => {
+            mavlink::common::MavCmd::MAV_CMD_IMAGE_START_CAPTURE => {
                 let result = mavlink::common::MavResult::MAV_RESULT_ACCEPTED;
                 send_ack(&sender, our_header, their_header, data.command, result);
                 let source = "/dev/video1".to_string();
