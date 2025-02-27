@@ -353,7 +353,7 @@ impl SinkInterface for VideoSink {
     #[instrument(level = "debug", skip(self))]
     fn start(&self) -> Result<()> {
         // self.pipeline_runner.start()
-        ok(())
+        Ok(())
     }
 
     #[instrument(level = "debug", skip(self))]
