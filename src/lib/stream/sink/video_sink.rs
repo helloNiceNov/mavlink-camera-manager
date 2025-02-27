@@ -105,11 +105,12 @@ impl VideoSink {
         let pipeline_runner = PipelineRunner::try_new(&pipeline, &sink_id, true)?;
 
         // Start the pipeline in Pause, because we want to wait the snapshot
-        if let Err(state_err) = pipeline.set_state(gst::State::Ready) {
+        if let Err(state_err) = pipeline.set_state(gst::State::Null) {
             return Err(anyhow!(
                 "Failed pausing VideoSink's pipeline: {state_err:#?}"
             ));
         }
+
         // Got a valid frame, block any further frame until next request
         // if let Some(old_blocker) = queue_src_pad
         //     .add_probe(gst::PadProbeType::BLOCK_DOWNSTREAM, |_pad, _info| {
@@ -119,6 +120,7 @@ impl VideoSink {
         // {
         //     queue_src_pad.remove_probe(old_blocker);
         // }
+
         Ok(Self {
             sink_id,
             pipeline,
