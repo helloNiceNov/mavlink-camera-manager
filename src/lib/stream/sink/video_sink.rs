@@ -105,7 +105,7 @@ impl VideoSink {
         let pipeline_runner = PipelineRunner::try_new(&pipeline, &sink_id, true)?;
 
         // Start the pipeline in Pause, because we want to wait the snapshot
-        if let Err(state_err) = pipeline.set_state(gst::State::READY) {
+        if let Err(state_err) = pipeline.set_state(gst::State::Ready) {
             return Err(anyhow!(
                 "Failed pausing VideoSink's pipeline: {state_err:#?}"
             ));
