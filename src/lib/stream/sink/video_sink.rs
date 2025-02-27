@@ -137,26 +137,10 @@ impl VideoSink {
     #[instrument(level = "debug", skip(self))]
     pub fn start_recording(&self) -> Result<()> {
         //// Play the pipeline if it's not playing yet.
-        if self.pipeline.current_state() != gst::State::Playing {
-            let _ = self.pipeline.set_state(gst::State::Playing);
-        }
-        // Unblock the data from entering the ProxySink
-        // if let Some(blocker) = self.pad_blocker.lock().unwrap().take() {
-        //     self.queue
-        //         .static_pad("src")
-        //         .expect("No src pad found on Queue")
-        //         .remove_probe(blocker);
+        self.pipeline_runner.start()
+        // if self.pipeline.current_state() != gst::State::Playing {
+        //     let _ = self.pipeline.set_state(gst::State::Playing);
         // }
-        info!("Recording started");
-        Ok(())
-    }
-
-    #[instrument(level = "debug", skip(self))]
-    pub fn start_recording(&self) -> Result<()> {
-        //// Play the pipeline if it's not playing yet.
-        if self.pipeline.current_state() != gst::State::Playing {
-            let _ = self.pipeline.set_state(gst::State::Playing);
-        }
         // Unblock the data from entering the ProxySink
         // if let Some(blocker) = self.pad_blocker.lock().unwrap().take() {
         //     self.queue
@@ -171,16 +155,23 @@ impl VideoSink {
     #[instrument(level = "debug", skip(self))]
     pub fn stop_recording(&self) -> Result<()> {
         //// Play the pipeline if it's not playing yet.
-        if self.pipeline.current_state() != gst::State::Null {
-            let _ = self.pipeline.set_state(gst::State::Null);
+        let pipeline_weak = self.pipeline.downgrade();
+        if let Err(error) = std::thread::Builder::new()
+            .name("EOS".to_string())
+            .spawn(move || {
+                let pipeline = pipeline_weak.upgrade().unwrap();
+                if let Err(error) = pipeline.post_message(gst::message::Eos::new()) {
+                    error!("Failed posting Eos message into Sink bus. Reason: {error:?}");
+                }
+            })
+            .expect("Failed spawning EOS thread")
+            .join()
+        {
+            error!(
+                "EOS Thread Panicked with: {:?}",
+                error.downcast_ref::<String>()
+            );
         }
-        // Unblock the data from entering the ProxySink
-        // if let Some(blocker) = self.pad_blocker.lock().unwrap().take() {
-        //     self.queue
-        //         .static_pad("src")
-        //         .expect("No src pad found on Queue")
-        //         .remove_probe(blocker);
-        // }
         info!("Recording stopped");
         Ok(())
     }
