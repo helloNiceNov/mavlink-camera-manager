@@ -105,7 +105,7 @@ impl VideoSink {
         let pipeline_runner = PipelineRunner::try_new(&pipeline, &sink_id, true)?;
 
         // Start the pipeline in Pause, because we want to wait the snapshot
-        if let Err(state_err) = pipeline.set_state(gst::State::Paused) {
+        if let Err(state_err) = pipeline.set_state(gst::State::READY) {
             return Err(anyhow!(
                 "Failed pausing VideoSink's pipeline: {state_err:#?}"
             ));
@@ -353,7 +353,6 @@ impl SinkInterface for VideoSink {
     #[instrument(level = "debug", skip(self))]
     fn start(&self) -> Result<()> {
         self.pipeline_runner.start()
-        // Ok(())
     }
 
     #[instrument(level = "debug", skip(self))]
