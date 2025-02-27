@@ -137,10 +137,10 @@ impl VideoSink {
     #[instrument(level = "debug", skip(self))]
     pub fn start_recording(&self) -> Result<()> {
         //// Play the pipeline if it's not playing yet.
-        self.pipeline_runner.start();
-        // if self.pipeline.current_state() != gst::State::Playing {
-        //     let _ = self.pipeline.set_state(gst::State::Playing);
-        // }
+        // self.pipeline_runner.start();
+        if self.pipeline.current_state() != gst::State::Playing {
+            let _ = self.pipeline.set_state(gst::State::Playing);
+        }
         // Unblock the data from entering the ProxySink
         // if let Some(blocker) = self.pad_blocker.lock().unwrap().take() {
         //     self.queue
