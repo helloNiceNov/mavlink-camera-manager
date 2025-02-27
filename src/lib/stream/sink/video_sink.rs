@@ -137,7 +137,7 @@ impl VideoSink {
     #[instrument(level = "debug", skip(self))]
     pub fn start_recording(&self) -> Result<()> {
         //// Play the pipeline if it's not playing yet.
-        self.pipeline_runner.start()
+        self.pipeline_runner.start();
         // if self.pipeline.current_state() != gst::State::Playing {
         //     let _ = self.pipeline.set_state(gst::State::Playing);
         // }
