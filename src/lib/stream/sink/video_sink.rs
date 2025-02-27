@@ -111,14 +111,14 @@ impl VideoSink {
             ));
         }
         // Got a valid frame, block any further frame until next request
-        if let Some(old_blocker) = queue_src_pad
-            .add_probe(gst::PadProbeType::BLOCK_DOWNSTREAM, |_pad, _info| {
-                gst::PadProbeReturn::Ok
-            })
-            .and_then(|blocker| pad_blocker_clone.lock().unwrap().replace(blocker))
-        {
-            queue_src_pad.remove_probe(old_blocker);
-        }
+        // if let Some(old_blocker) = queue_src_pad
+        //     .add_probe(gst::PadProbeType::BLOCK_DOWNSTREAM, |_pad, _info| {
+        //         gst::PadProbeReturn::Ok
+        //     })
+        //     .and_then(|blocker| pad_blocker_clone.lock().unwrap().replace(blocker))
+        // {
+        //     queue_src_pad.remove_probe(old_blocker);
+        // }
         Ok(Self {
             sink_id,
             pipeline,
