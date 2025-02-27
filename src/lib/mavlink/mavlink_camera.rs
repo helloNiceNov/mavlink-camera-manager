@@ -515,6 +515,39 @@ impl MavlinkCameraInner {
             mavlink::common::MavCmd::MAV_CMD_VIDEO_STOP_CAPTURE => {
                 let result = mavlink::common::MavResult::MAV_RESULT_ACCEPTED;
                 send_ack(&sender, our_header, their_header, data.command, result);
+                let source = "/dev/video1".to_string();
+                match stream_manager::get_video_stop_from_source(source.clone()).await {
+                    Some(Ok(_image)) => {
+                        // Process and send the generated thumbnail back as a MAVLink message
+                        let message = MavMessage::CAMERA_IMAGE_CAPTURED(
+                            mavlink::common::CAMERA_IMAGE_CAPTURED_DATA {
+                                time_utc: 0,
+                                time_boot_ms: 0,
+                                lat: 0,
+                                lon: 0,
+                                alt: 0,
+                                relative_alt: 0,
+                                q: [0.0, 0.0, 0.0, 0.0],
+                                image_index: 0,
+                                camera_id: 1,
+                                capture_result: 1,
+                                file_url: [0u8; 205],
+                            },
+                        );
+                        warn!("zora enter starting video 02");
+                        if let Err(error) = sender.send(Message::ToBeSent((our_header, message))) {
+                            warn!("Failed to send CAMERA_IMAGE_CAPTURED message: {error:?}");
+                        }
+                    }
+                    None => {
+                        warn!("Thumbnail not found for source {source}");
+                        warn!("zora none starting video 03");
+                    }
+                    Some(Err(error)) => {
+                        warn!("Error generating thumbnail: {error:?}");
+                        warn!("zora error starting video 04");
+                    }
+                }
             }
             message => {
                 let result = mavlink::common::MavResult::MAV_RESULT_UNSUPPORTED;

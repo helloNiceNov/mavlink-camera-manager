@@ -410,6 +410,79 @@ pub async fn get_video_from_source(source: String) -> Option<ClonableResult<()>>
         Err(error) => Some(Err(Arc::new(anyhow!(error.to_string())))),
     }
 }
+#[instrument(level = "debug")]
+#[cached(time = 1)]
+
+pub async fn get_video_stop_from_source(source: String) -> Option<ClonableResult<()>> {
+    let (tx, rx) = tokio::sync::oneshot::channel();
+    std::thread::spawn(move || {
+        tokio::runtime::Builder::new_current_thread()
+            .on_thread_start(|| debug!("Thread started"))
+            .on_thread_stop(|| debug!("Thread stopped"))
+            .thread_name_fn(|| {
+                static ATOMIC_ID: std::sync::atomic::AtomicUsize =
+                    std::sync::atomic::AtomicUsize::new(0);
+                let id = ATOMIC_ID.fetch_add(1, std::sync::atomic::Ordering::SeqCst);
+                format!("Thumbnailer-{id}")
+            })
+            .enable_time()
+            .build()
+            .expect("Failed building a new tokio runtime")
+            .block_on(async move {
+                let manager = MANAGER.read().await;
+
+                let res = futures::stream::iter(&manager.streams)
+                    .filter_map(|(_id, stream)| {
+                        let source = &source;
+
+                        let future = async move {
+                            let state_guard = stream.state.read().await;
+
+                            let state_ref = state_guard.as_ref()?;
+
+                            if !state_ref
+                                .video_and_stream_information
+                                .video_source
+                                .inner()
+                                .source_string()
+                                .eq(source)
+                            {
+                                return None;
+                            }
+
+                            let sinks = state_ref.pipeline.inner_state_as_ref().sinks.values();
+
+                            let sink = futures::stream::iter(sinks)
+                                .filter_map(|sink| {
+                                    let future = async move {
+                                        matches!(sink, Sink::Video(_)).then_some(sink)
+                                    };
+
+                                    Box::pin(future)
+                                })
+                                .next()
+                                .await?;
+
+                            let Sink::Video(video_sink) = sink else {
+                                return None;
+                            };
+
+                            Some(video_sink.stop_recording().map_err(Arc::new))
+                        };
+                        Box::pin(future)
+                    })
+                    .next()
+                    .await;
+
+                let _ = tx.send(res);
+            });
+    });
+
+    match rx.await {
+        Ok(_) => Some(Ok(())),
+        Err(error) => Some(Err(Arc::new(anyhow!(error.to_string())))),
+    }
+}
 
 #[instrument(level = "debug")]
 pub async fn add_stream_and_start(

@@ -141,13 +141,47 @@ impl VideoSink {
             let _ = self.pipeline.set_state(gst::State::Playing);
         }
         // Unblock the data from entering the ProxySink
-        if let Some(blocker) = self.pad_blocker.lock().unwrap().take() {
-            self.queue
-                .static_pad("src")
-                .expect("No src pad found on Queue")
-                .remove_probe(blocker);
-        }
+        // if let Some(blocker) = self.pad_blocker.lock().unwrap().take() {
+        //     self.queue
+        //         .static_pad("src")
+        //         .expect("No src pad found on Queue")
+        //         .remove_probe(blocker);
+        // }
         info!("Recording started");
+        Ok(())
+    }
+
+    #[instrument(level = "debug", skip(self))]
+    pub fn start_recording(&self) -> Result<()> {
+        //// Play the pipeline if it's not playing yet.
+        if self.pipeline.current_state() != gst::State::Playing {
+            let _ = self.pipeline.set_state(gst::State::Playing);
+        }
+        // Unblock the data from entering the ProxySink
+        // if let Some(blocker) = self.pad_blocker.lock().unwrap().take() {
+        //     self.queue
+        //         .static_pad("src")
+        //         .expect("No src pad found on Queue")
+        //         .remove_probe(blocker);
+        // }
+        info!("Recording started");
+        Ok(())
+    }
+
+    #[instrument(level = "debug", skip(self))]
+    pub fn stop_recording(&self) -> Result<()> {
+        //// Play the pipeline if it's not playing yet.
+        if self.pipeline.current_state() != gst::State::Null {
+            let _ = self.pipeline.set_state(gst::State::Null);
+        }
+        // Unblock the data from entering the ProxySink
+        // if let Some(blocker) = self.pad_blocker.lock().unwrap().take() {
+        //     self.queue
+        //         .static_pad("src")
+        //         .expect("No src pad found on Queue")
+        //         .remove_probe(blocker);
+        // }
+        info!("Recording stopped");
         Ok(())
     }
 }
