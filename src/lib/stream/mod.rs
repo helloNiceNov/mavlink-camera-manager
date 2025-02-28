@@ -341,13 +341,13 @@ impl StreamState {
                 ));
             }
 
-            if let Err(reason) = create_video_sink(Manager::generate_uuid())
-                .and_then(|sink| stream.pipeline.add_sink(sink))
-            {
-                return Err(anyhow!(
-                    "Failed to add Sink of type Video to the Pipeline. Reason: {reason}"
-                ));
-            }
+            // if let Err(reason) = create_video_sink(Manager::generate_uuid())
+            //     .and_then(|sink| stream.pipeline.add_sink(sink))
+            // {
+            //     return Err(anyhow!(
+            //         "Failed to add Sink of type Video to the Pipeline. Reason: {reason}"
+            //     ));
+            // }
 
             //Start the pipeline. This will automatically start sinks with linked proxy-isolated pipelines
             stream
