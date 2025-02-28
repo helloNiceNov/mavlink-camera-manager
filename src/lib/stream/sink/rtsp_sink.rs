@@ -251,7 +251,7 @@ impl RtspSink {
             .property_from_str("socket-path", &socket_path)
             .property("sync", false)
             .property("wait-for-connection", false)
-            .property("shm-size", 10_000_000u32)
+            .property("shm-size", 52_428_800u32)
             .property("enable-last-sample", false)
             .build()?;
 
