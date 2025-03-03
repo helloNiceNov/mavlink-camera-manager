@@ -159,7 +159,9 @@ impl VideoSink {
     pub fn stop_recording(&self) -> Result<()> {
         //// Play the pipeline if it's not playing yet.
         if self.pipeline.current_state() != gst::State::Null {
-            let _ = self.pipeline.set_state(gst::State::Null);
+            if let Err(state_err) = self.pipeline.set_state(gst::State::Null) {
+                warn!("Failed to set Pipeline's state from VideoSink to Null: {state_err:#?}");
+            }
         }
         info!("Recording stopped");
         Ok(())
