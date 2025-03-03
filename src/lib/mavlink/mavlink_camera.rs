@@ -534,7 +534,7 @@ impl MavlinkCameraInner {
                                 file_url: [0u8; 205],
                             },
                         );
-                        warn!("zora enter starting video 02");
+                        warn!("zora enter stop video 02");
                         if let Err(error) = sender.send(Message::ToBeSent((our_header, message))) {
                             warn!("Failed to send CAMERA_IMAGE_CAPTURED message: {error:?}");
                         }
@@ -545,7 +545,7 @@ impl MavlinkCameraInner {
                     }
                     Some(Err(error)) => {
                         warn!("Error generating thumbnail: {error:?}");
-                        warn!("zora error starting video 04");
+                        warn!("zora error stop video 04");
                     }
                 }
             }
