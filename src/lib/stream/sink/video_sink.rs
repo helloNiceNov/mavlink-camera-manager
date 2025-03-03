@@ -161,7 +161,12 @@ impl VideoSink {
     #[instrument(level = "debug", skip(self))]
     pub fn stop_recording(&self) -> Result<()> {
         //// Play the pipeline if it's not playing yet.
-        if self.pipeline.current_state() != gst::State::Null {
+        warn!("zora video_sink.rs:stop_recording");
+        debug!(
+            "zora Current pipeline state before attempting to null: {:?}",
+            self.pipeline.current_state()
+        );
+        if self.pipeline.current_state() != gst::State::Paused {
             if let Err(state_err) = self.pipeline.set_state(gst::State::Paused) {
                 warn!("Failed to set Pipeline's state from VideoSink to Null: {state_err:#?}");
             }
