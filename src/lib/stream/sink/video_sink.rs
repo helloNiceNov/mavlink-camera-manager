@@ -105,21 +105,21 @@ impl VideoSink {
         let pipeline_runner = PipelineRunner::try_new(&pipeline, &sink_id, true)?;
 
         // Start the pipeline in Pause, because we want to wait the snapshot
-        if let Err(state_err) = pipeline.set_state(gst::State::Null) {
+        if let Err(state_err) = pipeline.set_state(gst::State::Paused) {
             return Err(anyhow!(
                 "Failed pausing VideoSink's pipeline: {state_err:#?}"
             ));
         }
 
-        // Got a valid frame, block any further frame until next request
-        // if let Some(old_blocker) = queue_src_pad
-        //     .add_probe(gst::PadProbeType::BLOCK_DOWNSTREAM, |_pad, _info| {
-        //         gst::PadProbeReturn::Ok
-        //     })
-        //     .and_then(|blocker| pad_blocker_clone.lock().unwrap().replace(blocker))
-        // {
-        //     queue_src_pad.remove_probe(old_blocker);
-        // }
+        //Got a valid frame, block any further frame until next request
+        if let Some(old_blocker) = queue_src_pad
+            .add_probe(gst::PadProbeType::BLOCK_DOWNSTREAM, |_pad, _info| {
+                gst::PadProbeReturn::Ok
+            })
+            .and_then(|blocker| pad_blocker_clone.lock().unwrap().replace(blocker))
+        {
+            queue_src_pad.remove_probe(old_blocker);
+        }
 
         Ok(Self {
             sink_id,
@@ -138,20 +138,23 @@ impl VideoSink {
     pub fn start_recording(&self) -> Result<()> {
         //// Play the pipeline if it's not playing yet.
         // self.pipeline_runner.start();
-        warn!("zora video_sink:start_recording01");
+        warn!("zora video_sink.rs:start_recording");
+        debug!(
+            "zora Current pipeline state before attempting to play: {:?}",
+            self.pipeline.current_state()
+        );
         if self.pipeline.current_state() != gst::State::Playing {
             if let Err(state_err) = self.pipeline.set_state(gst::State::Playing) {
                 warn!("Failed to set Pipeline's state from VideoSink to Playing: {state_err:#?}");
             }
         }
-        // Unblock the data from entering the ProxySink
-        // if let Some(blocker) = self.pad_blocker.lock().unwrap().take() {
-        //     self.queue
-        //         .static_pad("src")
-        //         .expect("No src pad found on Queue")
-        //         .remove_probe(blocker);
-        // }
-        warn!("zora video_sink:start_recording02");
+        //Unblock the data from entering the ProxySink
+        if let Some(blocker) = self.pad_blocker.lock().unwrap().take() {
+            self.queue
+                .static_pad("src")
+                .expect("No src pad found on Queue")
+                .remove_probe(blocker);
+        }
         Ok(())
     }
 
@@ -159,7 +162,7 @@ impl VideoSink {
     pub fn stop_recording(&self) -> Result<()> {
         //// Play the pipeline if it's not playing yet.
         if self.pipeline.current_state() != gst::State::Null {
-            if let Err(state_err) = self.pipeline.set_state(gst::State::Null) {
+            if let Err(state_err) = self.pipeline.set_state(gst::State::Paused) {
                 warn!("Failed to set Pipeline's state from VideoSink to Null: {state_err:#?}");
             }
         }
@@ -215,7 +218,6 @@ impl SinkInterface for VideoSink {
             if let Some(parent) = tee_src_pad.parent_element() {
                 parent.release_request_pad(tee_src_pad)
             }
-
             return Err(anyhow!(msg));
         }
 
@@ -370,8 +372,8 @@ impl SinkInterface for VideoSink {
 
     #[instrument(level = "debug", skip(self))]
     fn start(&self) -> Result<()> {
-        // self.pipeline_runner.start()
-        Ok(())
+        self.pipeline_runner.start()
+        // Ok(())
     }
 
     #[instrument(level = "debug", skip(self))]
