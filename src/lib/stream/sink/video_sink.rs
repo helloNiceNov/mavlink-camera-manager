@@ -166,8 +166,8 @@ impl VideoSink {
             "zora Current pipeline state before attempting to null: {:?}",
             self.pipeline.current_state()
         );
-        if self.pipeline.current_state() != gst::State::Paused {
-            if let Err(state_err) = self.pipeline.set_state(gst::State::Paused) {
+        if self.pipeline.current_state() != gst::State::Null {
+            if let Err(state_err) = self.pipeline.set_state(gst::State::Null) {
                 warn!("Failed to set Pipeline's state from VideoSink to Null: {state_err:#?}");
             }
         }
