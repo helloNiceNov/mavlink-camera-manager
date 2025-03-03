@@ -138,7 +138,7 @@ impl VideoSink {
     pub fn start_recording(&self) -> Result<()> {
         //// Play the pipeline if it's not playing yet.
         // self.pipeline_runner.start();
-        info!("zora video_sink:start_recording01");
+        warn!("zora video_sink:start_recording01");
         if self.pipeline.current_state() != gst::State::Playing {
             if let Err(state_err) = self.pipeline.set_state(gst::State::Playing) {
                 warn!("Failed to set Pipeline's state from VideoSink to Playing: {state_err:#?}");
@@ -151,7 +151,7 @@ impl VideoSink {
         //         .expect("No src pad found on Queue")
         //         .remove_probe(blocker);
         // }
-        info!("zora video_sink:start_recording02");
+        warn!("zora video_sink:start_recording02");
         Ok(())
     }
 

@@ -342,6 +342,7 @@ pub async fn get_jpeg_thumbnail_from_source(
 #[cached(time = 1)]
 pub async fn get_video_from_source(source: String) -> Option<ClonableResult<()>> {
     let (tx, rx) = tokio::sync::oneshot::channel();
+    warn!("zora manager get_video_from_source01");
     std::thread::spawn(move || {
         tokio::runtime::Builder::new_current_thread()
             .on_thread_start(|| debug!("Thread started"))
@@ -393,7 +394,7 @@ pub async fn get_video_from_source(source: String) -> Option<ClonableResult<()>>
                             let Sink::Video(video_sink) = sink else {
                                 return None;
                             };
-
+                            warn!("zora manager get_video_from_source02");
                             Some(video_sink.start_recording().map_err(Arc::new))
                         };
                         Box::pin(future)
@@ -404,7 +405,7 @@ pub async fn get_video_from_source(source: String) -> Option<ClonableResult<()>>
                 let _ = tx.send(res);
             });
     });
-
+    warn!("zora manager get_video_from_source03");
     match rx.await {
         Ok(_) => Some(Ok(())),
         Err(error) => Some(Err(Arc::new(anyhow!(error.to_string())))),
